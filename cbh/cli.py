@@ -730,6 +730,9 @@ def parse_finding_metadata(text: str) -> dict:
     """Best-effort parse of YAML-ish frontmatter + section content."""
     md = {"title": "", "severity": "Medium", "asset": "", "endpoint": "",
           "summary": "", "steps": "", "impact": "", "remediation": ""}
+    # Findings authored on Windows arrive with CRLF; normalize so the `\n`-anchored
+    # frontmatter/heading regexes match (a stray \r otherwise drops severity/sections).
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
     # YAML frontmatter
     m = re.match(r"^---\n(.*?)\n---\n(.*)", text, re.S)
     body = text
